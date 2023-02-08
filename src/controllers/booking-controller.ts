@@ -10,9 +10,6 @@ export async function getBooking(req: AuthenticatedRequest, res: Response): Prom
     try {
         const { userId } = req;
         const booking = await bookingService.getBookingService(userId);
-        if (!booking){
-            throw requestError(httpStatus.NOT_FOUND, "Booking not found");
-        }
         res.status(200).send(booking);
     }catch (err){
         console.error(err)

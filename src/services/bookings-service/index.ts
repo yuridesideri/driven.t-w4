@@ -4,6 +4,9 @@ import httpStatus from "http-status";
 
 async function getBookingService(userId: number) {
     const booking = await getBookingRepo(userId);
+    if (!booking){
+        throw requestError(httpStatus.NOT_FOUND, "Booking not found");
+    }
     return booking;
 }
 
@@ -25,10 +28,7 @@ async function insertBookingService(userId: number, roomId: number){
 }
 
 async function changeBookingService(userId: number, bookingId: number, roomId: number){
-    const booking = await getBookingRepo(userId);
-    if (!booking){
-        throw requestError(httpStatus.NOT_FOUND, "You don't have a booking yet");
-    }
+    const booking = await getBookingService(userId);
     if (booking.id !== bookingId){
         throw requestError(httpStatus.FORBIDDEN, "You can't change other user's booking");
     }
