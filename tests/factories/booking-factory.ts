@@ -10,7 +10,7 @@ export async function createBooking(userId: number, roomId: number){
         },
         Room: {
             connect: {
-                id: 1
+                id: roomId
             }
         },
     }

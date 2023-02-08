@@ -1,4 +1,3 @@
-import { requestError } from "@/errors";
 import { AuthenticatedRequest } from "@/middlewares"
 import bookingService from "@/services/bookings-service";
 import { Response } from "express";

@@ -6,8 +6,13 @@ export function getBookingRepo (userId: number){
     return prisma.booking.findFirst({
         where: {
             userId
-        }
-    })
+        },
+        select: {
+            id: true,
+            Room: true,
+               
+    }
+})
 }
 
 export function getRoomCapacityAndBookingsRepo (RoomId: number){

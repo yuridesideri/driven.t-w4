@@ -42,10 +42,10 @@ describe('GET /bookings', () => {
   });
 
   describe('when token is valid', () => {
-    it('should respond with NOT_FOUND(404) when user has no bookings', async () => {
-      const user = await createUser();
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
 
+    it('should respond with NOT_FOUND(404) when user has no bookings', async () => {
+      const token = await generateValidToken()
+      
       const response = await server.get('/bookings').set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.NOT_FOUND);
@@ -53,7 +53,7 @@ describe('GET /bookings', () => {
 
     it('should respond with OK(200) when user has bookings', async () => {
       const user = await createUser();
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+      const token = await generateValidToken(user)
       const hotel = await createHotel();
       const room = await createRoomWithHotelId(hotel.id);
       const createdBooking = await createBooking(user.id, room.id);
@@ -63,7 +63,10 @@ describe('GET /bookings', () => {
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual({
         id: createdBooking.id,
-        Room: { ...room },
+        Room: { ...room,
+          createdAt: room.createdAt.toISOString(),
+          updatedAt: room.updatedAt.toISOString(),
+        },
       });
     });
   });
@@ -95,8 +98,7 @@ describe('POST /bookings', () => {
 
   describe('when token is valid', () => {
     it('should respond with NOT_FOUND(404) when roomId is not valid', async () => {
-      const user = await createUser();
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+      const token = await generateValidToken()
 
       const response = await server.post('/bookings').set('Authorization', `Bearer ${token}`).send({ roomId: 0 });
 
@@ -108,7 +110,7 @@ describe('POST /bookings', () => {
       const user1 = await createUser();
       const user2 = await createUser();
       const user3 = await createUser();
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+      const token = await generateValidToken(user);
       const hotel = await createHotel();
       const room = await createRoomWithHotelId(hotel.id);
       await createBooking(user1.id, room.id);
@@ -122,7 +124,7 @@ describe('POST /bookings', () => {
       expect(response.status).toBe(httpStatus.FORBIDDEN);
     });
 
-    describe('when user has no proper business rules respond with FORBIDDEN(403)', async () => {
+    describe('when user has no proper business rules respond with FORBIDDEN(403)', () => {
       it('when user doesnt have an enrollment yet', async () => {
         const token = await generateValidToken();
         const hotel = await createHotel();
@@ -152,7 +154,7 @@ describe('POST /bookings', () => {
 
     it('should respond with OK(200) when roomId and ticket are valid', async () => {
       const user = await createUser();
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+      const token = await generateValidToken(user);
       const hotel = await createHotel();
       const room = await createRoomWithHotelId(hotel.id);
       const createdBooking = await createBooking(user.id, room.id);
@@ -196,7 +198,7 @@ describe('PUT /bookings/:bookingId', () => {
   describe('when token is valid', () => {
     it('should respond with NOT_FOUND(404) when roomId is not valid', async () => {
       const user = await createUser();
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+      const token = generateValidToken(user);
 
       const response = await server.post('/bookings').set('Authorization', `Bearer ${token}`).send({ roomId: 0 });
 
@@ -208,7 +210,7 @@ describe('PUT /bookings/:bookingId', () => {
       const user1 = await createUser();
       const user2 = await createUser();
       const user3 = await createUser();
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+      const token = await generateValidToken(user);
       const hotel = await createHotel();
       const room = await createRoomWithHotelId(hotel.id);
       await createBooking(user1.id, room.id);
@@ -222,7 +224,7 @@ describe('PUT /bookings/:bookingId', () => {
       expect(response.status).toBe(httpStatus.FORBIDDEN);
     });
 
-    describe('when user has no proper business rules respond with FORBIDDEN(403)', async () => {
+    describe('when user has no proper business rules respond with FORBIDDEN(403)', () => {
       it('when user doesnt have an enrollment yet', async () => {
         const token = await generateValidToken();
         const hotel = await createHotel();
@@ -252,7 +254,7 @@ describe('PUT /bookings/:bookingId', () => {
 
     it('should respond with with NOT_FOUND(404) when bookingId does not exist', async () => {
         const user = await createUser();
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+        const token = await generateValidToken(user);
         const hotel = await createHotel();
         await createRoomWithHotelId(hotel.id);
     
@@ -264,7 +266,7 @@ describe('PUT /bookings/:bookingId', () => {
     it ('should respond with FORBIDDEN(403) when user is not the owner of the booking', async () => {
         const user = await createUser();
         const user1 = await createUser();
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+        const token = await generateValidToken(user);
         const hotel = await createHotel();
         const room = await createRoomWithHotelId(hotel.id);
         const createdBooking = await createBooking(user1.id, room.id);
@@ -276,7 +278,7 @@ describe('PUT /bookings/:bookingId', () => {
 
     it('should respond with OK(200) when roomId and ticket are valid', async () => {
       const user = await createUser();
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+      const token = await generateValidToken(user)
       const hotel = await createHotel();
       const room = await createRoomWithHotelId(hotel.id);
       const createdBooking = await createBooking(user.id, room.id);
