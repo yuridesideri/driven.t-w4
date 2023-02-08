@@ -21,11 +21,12 @@ export async function getBooking(req: AuthenticatedRequest, res: Response): Prom
 export async function insertBooking(req: AuthenticatedRequest, res: Response): Promise<Response>{
     try {
         const { userId } = req;
-        const { RoomId } = req.body;
+        const { roomId } = req.body;
         await hotelService.getHotels(userId);
-        await bookingService.checkRoomDisponibilityService(parseInt(RoomId));
-        const bookingId = await bookingService.insertBookingService(userId, parseInt(RoomId));
-        res.status(200).send(bookingId);
+        await bookingService.checkRoomDisponibilityService(parseInt(roomId));
+        const bookingId = await bookingService.insertBookingService(userId, parseInt(roomId));
+        console.log("passou no insert", bookingId)
+        return res.status(200).send(bookingId);
     }catch (err){
         console.error(err)
         res.status(err.status || httpStatus.FORBIDDEN)

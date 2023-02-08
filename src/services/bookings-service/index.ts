@@ -18,13 +18,13 @@ async function checkRoomDisponibilityService(RoomId: number){
 }
 
 async function insertBookingService(userId: number, roomId: number){
-    const booking = await getBookingService(userId);
+    const booking = await getBookingRepo(userId);
     if (booking){
         throw requestError(httpStatus.FORBIDDEN, "User already has a booking");
     }
     const bookingCreated = await insertBookingRepo(userId, roomId);
 
-    return bookingCreated.id;
+    return {id: bookingCreated.id};
 }
 
 async function changeBookingService(userId: number, bookingId: number, roomId: number){

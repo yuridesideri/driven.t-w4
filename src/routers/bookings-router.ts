@@ -8,5 +8,5 @@ export const bookingsRouter = Router();
 bookingsRouter
   .all('/*', authenticateToken)
   .get('/', getBooking)
-  .post('/', validateBody(bookingIdSchema), insertBooking)
+  .post('/', validateBody(roomIdSchema), insertBooking)
   .put('/:bookingId', validateParams(bookingIdSchema), validateBody(roomIdSchema), changeBooking);

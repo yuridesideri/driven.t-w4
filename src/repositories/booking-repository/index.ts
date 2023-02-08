@@ -1,5 +1,6 @@
 import { prisma } from "@/config";
 import { requestError } from "@/errors";
+import { error } from "console";
 import httpStatus from "http-status";
 
 export function getBookingRepo (userId: number){
@@ -28,9 +29,7 @@ export function getRoomCapacityAndBookingsRepo (RoomId: number){
                 }
             }
         },
-        rejectOnNotFound(error) {
-            return requestError(httpStatus.NOT_FOUND, "Room not found");
-        },
+        rejectOnNotFound: () => requestError(httpStatus.NOT_FOUND, "Room not found")
     })
 }
 
