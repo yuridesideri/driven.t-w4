@@ -37,3 +37,14 @@ export function insertBookingRepo (userId: number, roomId: number){
         }
     })
 }
+
+export function changeBookingRepo (bookingId: number, roomId: number){
+    return prisma.booking.update({
+        where: {
+            id: bookingId
+        },
+        data: {
+            roomId
+        }
+    })
+}
