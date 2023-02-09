@@ -256,10 +256,13 @@ describe("PUT /bookings/:bookingId", () => {
 
       it("when room is at full capacity", async () => {
         const user = await createUser();
+        const token = await generateValidToken(user);
+        const enrollment = await createEnrollmentWithAddress(user);
+        const ticketType = await createTicketTypeWithHotel();
+        await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
         const user1 = await createUser();
         const user2 = await createUser();
         const user3 = await createUser();
-        const token = await generateValidToken(user);
         const hotel = await createHotel();
         const room = await createRoomWithHotelId(hotel.id);
         const room2 = await createRoomWithHotelId(hotel.id);
@@ -277,8 +280,12 @@ describe("PUT /bookings/:bookingId", () => {
 
       it("when user is not the owner of the booking", async () => {
         const user = await createUser();
-        const user1 = await createUser();
         const token = await generateValidToken(user);
+        const enrollment = await createEnrollmentWithAddress(user);
+        const ticketType = await createTicketTypeWithHotel();
+        await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+
+        const user1 = await createUser();
         const hotel = await createHotel();
         const room = await createRoomWithHotelId(hotel.id);
         const room2 = await createRoomWithHotelId(hotel.id);
